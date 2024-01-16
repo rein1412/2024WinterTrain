@@ -24,7 +24,11 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "bsp_dwt.h"
+#include "motor_simulation.h"
+#include "string.h"
+#include "stdio.h"
+#include "stdlib.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,6 +50,20 @@
 
 /* USER CODE BEGIN PV */
 
+uint32_t DWT_CNT;
+float dt;
+motorObject_t Motor;//创建电机对象
+struct value{
+	float current;
+	float velocity;
+	float last_velocity;
+	float angle;
+}real;//参数初始化
+float velocity_aim,velocity_input,voltage_input;
+uint8_t receive_data[500];
+int len;
+float pid[3];//存放Kp,Ki,Kd,
+int len;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,6 +75,34 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+float PID(float *pid,float velocity_aim,struct value *real,motorObject_t *motor)
+{
+	float velocity_input_p,velocity_input_i,velocity_input_d;//储存pid三项的输出
+	float dcurrent = velocity_aim-real->velocity;
+	//P项
+	velocity_input_p = pid[0]*dcurrent;
+	//I项
+	velocity_input_i += pid[1]*dcurrent;
+	//d项
+	velocity_input_d = pid[2]*(real->velocity-real->last_velocity);
+	if(velocity_input_p+velocity_input_i+velocity_input_d <= motor->maxU)
+	{
+		return velocity_input_p+velocity_input_i+velocity_input_d;
+	}
+	else
+	{
+		return motor->maxU;
+	}
+}
+
+//float velocity_voltage(float s,motorObject_t *motor)
+//{
+//	float v;
+//	v = (motor->motorParam.J*motor->motorParam.L*s*s + motor->motorParam.J*motor->motorParam.R*s + motor->motorParam.L*motor->motorParam.b*s
+//	+ motor->motorParam.R*motor->motorParam.b + motor->motorParam.Kt*motor->motorParam.Ke)/motor->motorParam.Kt;
+	//有脏东西
+//	return v;
+//}
 /* USER CODE END 0 */
 
 /**
@@ -90,16 +136,29 @@ int main(void)
   MX_DMA_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+	DWT_Init(72);//dwt外设主频72MHz
+	Motor_Object_Init(&Motor);//初始化电机
+	__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
+	HAL_UART_Receive_DMA(&huart1, receive_data, 100);//DMA设置
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		dt = DWT_GetDeltaT(&DWT_CNT);//定义dt
+		real.current = Get_Motor_Current(&Motor);
+		real.velocity = Get_Motor_Velocity(&Motor);
+		real.last_velocity = Motor.lastVelocity;
+		real.angle = Get_Motor_Angle(&Motor);//测量电机当前状态
+		velocity_input = PID(&pid[3],velocity_aim,&real,&Motor);
+//		voltage_input = velocity_voltage(velocity_input,&Motor);//转化输入
+		Motor_Simulation(&Motor,voltage_input,dt);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+		HAL_Delay(1);
+		printf("%f,%f\n",velocity_aim,real.velocity);
   }
   /* USER CODE END 3 */
 }
@@ -144,6 +203,20 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void UART_IDLE_Callback(UART_HandleTypeDef *huart)
+{
+ if(__HAL_UART_GET_FLAG(huart,UART_FLAG_IDLE)) //判断一帧数据是否接收完毕
+ {	
+	//很好的函数，但是我选择用scanf,兄弟借你中断用用
+	scanf("Kp=%f,Ki=%f,Kd=%f",&pid[0],&pid[1],&pid[2]);
+	
+  __HAL_UART_CLEAR_IDLEFLAG(huart);
+  __HAL_DMA_CLEAR_FLAG(huart,DMA_FLAG_TC5);
+	HAL_UART_DMAStop(huart);
+  int len=100-__HAL_DMA_GET_COUNTER(huart->hdmarx);
+	 HAL_UART_Receive_DMA(huart,receive_data,100);//没用到但是不敢乱删的
+ }
+}
 
 /* USER CODE END 4 */
 
