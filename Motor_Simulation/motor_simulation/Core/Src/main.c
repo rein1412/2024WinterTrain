@@ -66,14 +66,16 @@ struct value{
 float velocity_aim,velocity_input,voltage_input;
 //角度闭环
 float angle_aim,angle_input,voltage_input;
+//单级串口设置
 //uint8_t receive_data[30];
 //char str[31];
+//串级串口设置
 uint8_t receive_data[60];
 char str[61];
 int len;
 //float pid[3];//存放Kp,Ki,Kd,
-	float pid[6];
-	float angle_input_p,angle_input_i,angle_input_d;//储存pid三项的输出 
+	float pid[6];//存放内外环Kp,Ki,Kd,
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -84,6 +86,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
 //速度闭环
 //float PID(float pid[],float velocity_aim,struct value *real,motorObject_t *motor)
 //{
@@ -106,70 +109,70 @@ void SystemClock_Config(void);
 //}
 
 //角度闭环
-float PID(float pid[],float angle_aim,struct value *real,motorObject_t *motor)
-{
-//	float angle_input_p,angle_input_i,angle_input_d;//储存pid三项的输出 
-  float da = angle_aim-real->angle;
-	//P项
-	angle_input_p = pid[0]*da;
-	//I项
-	angle_input_i += pid[1]*da;
-	//d项
-	angle_input_d = pid[2]*(real->angle-real->last_angle);
-	if(angle_input_p+angle_input_i+angle_input_d <= motor->maxU)
-	{
-		return angle_input_p+angle_input_i+angle_input_d;
-	}
-	else
-	{
-		return motor->maxU;
-	}
-}
-
-//串级角度闭环
-//内环
-//float vPID(float pid[],float velocity_aim,struct value *real,motorObject_t *motor)
+//float PID(float pid[],float angle_aim,struct value *real,motorObject_t *motor)
 //{
-//	float velocity_input_p,velocity_input_i,velocity_input_d;//储存pid三项的输出
-//	float dv = velocity_aim-real->velocity;
+//	float angle_input_p,angle_input_i,angle_input_d;//储存pid三项的输出 
+//  float da = angle_aim-real->angle;
 	//P项
-//	velocity_input_p = pid[3]*dv;
+//	angle_input_p = pid[0]*da;
 	//I项
-//	velocity_input_i += pid[4]*dv;
+//	angle_input_i += pid[1]*da;
 	//d项
-//	velocity_input_d = pid[5]*(real->velocity-real->last_velocity);
-//	if(velocity_input_p+velocity_input_i+velocity_input_d <= motor->maxU)
+//	angle_input_d = pid[2]*(real->angle-real->last_angle);
+//	if(angle_input_p+angle_input_i+angle_input_d <= motor->maxU)
 //	{
-//		return velocity_input_p+velocity_input_i+velocity_input_d;
+//		return angle_input_p+angle_input_i+angle_input_d;
 //	}
 //	else
 //	{
 //		return motor->maxU;
 //	}
 //}
-//外环Kp=100,Ki=100,Kd=0,Kp=50,Ki=0,Kd=1
-//float aPID(float pid[],float angle_aim,struct value *real,motorObject_t *motor)
-//{
-//	float angle_input_p,angle_input_i,angle_input_d;//储存pid三项的输出 
-//  float da = angle_aim-real->angle;
-//	float out;
+
+//串级角度闭环
+//内环
+float vPID(float pid[],float velocity_aim,struct value *real,motorObject_t *motor)
+{
+	float velocity_input_p,velocity_input_i,velocity_input_d;//储存pid三项的输出
+	float dv = velocity_aim-real->velocity;
 	//P项
-//	angle_input_p = pid[0]*da;
+	velocity_input_p = pid[3]*dv;
+	//I项
+	velocity_input_i += pid[4]*dv;
+	//d项
+	velocity_input_d = pid[5]*(real->velocity-real->last_velocity);
+	if(velocity_input_p+velocity_input_i+velocity_input_d <= motor->maxU)
+	{
+		return velocity_input_p+velocity_input_i+velocity_input_d;
+	}
+	else
+	{
+		return motor->maxU;
+	}
+}
+//外环
+float aPID(float pid[],float angle_aim,struct value *real,motorObject_t *motor)
+{
+	float angle_input_p,angle_input_i,angle_input_d;//储存pid三项的输出 
+  float da = angle_aim-real->angle;
+	float out;
+	//P项
+	angle_input_p = pid[0]*da;
 	//I项
 //  if(real->angle>6)//积分分离
 //	{
-//	angle_input_i += pid[1]*da;
+	angle_input_i += pid[1]*da;
 //	}
 //	else
 //	{
 //		angle_input_i = 0;
 //	}
 	//d项
-//	angle_input_d = pid[2]*(real->angle-real->last_angle);
-//	velocity_aim = angle_input_p+angle_input_i+angle_input_d;
-//	out = vPID(pid,velocity_aim,real,&Motor);
-//	return out;
-//}
+	angle_input_d = pid[2]*(real->angle-real->last_angle);
+	velocity_aim = angle_input_p+angle_input_i+angle_input_d;
+	out = vPID(pid,velocity_aim,real,&Motor);
+	return out;
+}
 
 //理论上此处应有转速——电压函数，因系统线性故省略，存疑
 //float velocity_voltage(float velocity_input,float s,motorObject_t *motor)
@@ -179,6 +182,7 @@ float PID(float pid[],float angle_aim,struct value *real,motorObject_t *motor)
 //	+ motor->motorParam.R*motor->motorParam.b + motor->motorParam.Kt*motor->motorParam.Ke)/motor->motorParam.Kt;
 //	return v;
 //}
+
 /* USER CODE END 0 */
 
 /**
@@ -212,10 +216,12 @@ int main(void)
   MX_DMA_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+	
 	DWT_Init(72);//dwt外设主频72MHz
 	Motor_Object_Init(&Motor);//初始化电机
 	__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
 	HAL_UART_Receive_DMA(&huart1, receive_data, 100);//DMA设置
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -223,14 +229,14 @@ int main(void)
   while (1)
   {
 		dt = DWT_GetDeltaT(&DWT_CNT);//定义dt
-		T += dt;
+		T += dt;//获取时间
 		real.current = Get_Motor_Current(&Motor);
 		real.velocity = Get_Motor_Velocity(&Motor);
 		real.last_velocity = Motor.lastVelocity;
 		real.angle = Get_Motor_Angle(&Motor);//测量电机当前状态
 		
 		//目标曲线建立区域
-		//阶跃
+		//v阶跃
 //		if(T<3)
 //		{
 //			velocity_aim=0;
@@ -239,9 +245,9 @@ int main(void)
 //		{
 //			velocity_aim=10;
 //		}
-		//正弦
+		//v正弦
 //		velocity_aim=7.07*sin(T);
-		//角度
+		//a阶跃
 //		if(T<3)
 //		{
 //			angle_aim = 0;
@@ -250,11 +256,22 @@ int main(void)
 //		{
 //			angle_aim = 2*PI;
 //		}
-//			angle_aim=1.414*PI*sin(T);
-			angle_aim=0;
-			
-		voltage_input = 10+PID(pid,velocity_aim,&real,&Motor);
-//		voltage_input = aPID(pid,angle_aim,&real,&Motor);
+		//a频率
+		angle_aim=1.414*PI*sin(T);
+		//a抗干扰
+//		angle_aim=0;
+//		if(T<3)
+//		{
+//			voltage_input = aPID(pid,angle_aim,&real,&Motor);
+//		}
+//		else
+//		{
+//			voltage_input = 10+aPID(pid,angle_aim,&real,&Motor);
+//		}
+	
+//		voltage_input = PID(pid,velocity_aim,&real,&Motor);//单级
+//		voltage_input = PID(pid,angle_aim,&real,&Motor);//单级
+		voltage_input = aPID(pid,angle_aim,&real,&Motor);
 		real.last_angle=real.angle;
 //转化输入		voltage_input = velocity_voltage(velocity_input,s,&Motor);
 		Motor_Simulation(&Motor,voltage_input,dt);
@@ -262,8 +279,8 @@ int main(void)
                                                                                                                                                                             
     /* USER CODE BEGIN 3 */
 		HAL_Delay(1);
-//		printf("%f,%f\n",velocity_aim,real.velocity);//打印变量波形
-		printf("%f,%f\n",angle_aim,real.angle);//打印变量波形
+//		printf("%f,%f\n",velocity_aim,real.velocity);//打印速度波形
+		printf("%f,%f\n",angle_aim,real.angle);//打印角度波形
   }
   /* USER CODE END 3 */
 }
@@ -321,10 +338,10 @@ void UART_IDLE_Callback(UART_HandleTypeDef *huart)
 	 {
         sprintf(&str[i], "%c", receive_data[i]);
    }
-//	 str[30] = '\0';
+//	 str[30] = '\0';//单级
 	 str[60] = '\0';
-	 sscanf((char *)receive_data, "Kp=%f,Ki=%f,Kd=%f", &pid[0], &pid[1], &pid[2]);//将接收的数据拼接为str再用sscanf处理
-//	 sscanf((char *)receive_data, "Kp=%f,Ki=%f,Kd=%f,Kp=%f,Ki=%f,Kd=%f", &pid[0], &pid[1], &pid[2],&pid[3], &pid[4], &pid[5]);//将接收的数据拼接为str再用sscanf处理
+//	 sscanf((char *)receive_data, "Kp=%f,Ki=%f,Kd=%f", &pid[0], &pid[1], &pid[2]);//将接收的数据拼接为str再用sscanf处理
+	 sscanf((char *)receive_data, "Kp=%f,Ki=%f,Kd=%f,Kp=%f,Ki=%f,Kd=%f", &pid[0], &pid[1], &pid[2],&pid[3], &pid[4], &pid[5]);//将接收的数据拼接为str再用sscanf处理
  }
 }
 
