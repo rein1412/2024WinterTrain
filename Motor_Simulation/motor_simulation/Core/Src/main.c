@@ -74,8 +74,7 @@ uint8_t receive_data[60];
 char str[61];
 int len;
 //float pid[3];//存放Kp,Ki,Kd,
-	float pid[6];//存放内外环Kp,Ki,Kd,
-
+float pid[6];//存放内外环Kp,Ki,Kd,
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -88,48 +87,53 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 
 //速度闭环
-//float PID(float pid[],float velocity_aim,struct value *real,motorObject_t *motor)
-//{
+/*
+float PID(float pid[],float velocity_aim,struct value *real,motorObject_t *motor)
+{
 //	float velocity_input_p,velocity_input_i,velocity_input_d;//储存pid三项的输出
-//	float dv = velocity_aim-real->velocity;
-	//P项
-//	velocity_input_p = pid[0]*dv;
-	//I项
-//	velocity_input_i += pid[1]*dv;
+	float dv = velocity_aim-real->velocity;
+	//p项
+	velocity_input_p = pid[0]*dv;
+	//i项
+	velocity_input_i += pid[1]*dv;
 	//d项
-//	velocity_input_d = pid[2]*(real->velocity-real->last_velocity);
-//	if(velocity_input_p+velocity_input_i+velocity_input_d <= motor->maxU)
-//	{
-//		return velocity_input_p+velocity_input_i+velocity_input_d;
-//	}
-//	else
-//	{
-//		return motor->maxU;
-//	}
-//}
+	velocity_input_d = pid[2]*(real->velocity-real->last_velocity);
+	if(velocity_input_p+velocity_input_i+velocity_input_d <= motor->maxU)
+	{
+		return velocity_input_p+velocity_input_i+velocity_input_d;
+	}
+	else
+	{
+		return motor->maxU;
+	}
+}
+*/
 
 //角度闭环
-//float PID(float pid[],float angle_aim,struct value *real,motorObject_t *motor)
-//{
-//	float angle_input_p,angle_input_i,angle_input_d;//储存pid三项的输出 
-//  float da = angle_aim-real->angle;
+/*
+float PID(float pid[],float angle_aim,struct value *real,motorObject_t *motor)
+{
+	float angle_input_p,angle_input_i,angle_input_d;//储存pid三项的输出 
+  float da = angle_aim-real->angle;
 	//P项
-//	angle_input_p = pid[0]*da;
+ 	angle_input_p = pid[0]*da;
 	//I项
-//	angle_input_i += pid[1]*da;
+	angle_input_i += pid[1]*da;
 	//d项
-//	angle_input_d = pid[2]*(real->angle-real->last_angle);
-//	if(angle_input_p+angle_input_i+angle_input_d <= motor->maxU)
-//	{
-//		return angle_input_p+angle_input_i+angle_input_d;
-//	}
-//	else
-//	{
-//		return motor->maxU;
-//	}
-//}
+ 	angle_input_d = pid[2]*(real->angle-real->last_angle);
+ 	if(angle_input_p+angle_input_i+angle_input_d <= motor->maxU)
+	{
+		return angle_input_p+angle_input_i+angle_input_d;
+	}
+	else
+	{
+		return motor->maxU;
+	}
+}
+*/
 
 //串级角度闭环
+
 //内环
 float vPID(float pid[],float velocity_aim,struct value *real,motorObject_t *motor)
 {
@@ -174,14 +178,6 @@ float aPID(float pid[],float angle_aim,struct value *real,motorObject_t *motor)
 	return out;
 }
 
-//理论上此处应有转速——电压函数，因系统线性故省略，存疑
-//float velocity_voltage(float velocity_input,float s,motorObject_t *motor)
-//{
-//	float v;
-//	v = velocity_input*(motor->motorParam.J*motor->motorParam.L*s*s + motor->motorParam.J*motor->motorParam.R*s + motor->motorParam.L*motor->motorParam.b*s
-//	+ motor->motorParam.R*motor->motorParam.b + motor->motorParam.Kt*motor->motorParam.Ke)/motor->motorParam.Kt;
-//	return v;
-//}
 
 /* USER CODE END 0 */
 
@@ -237,43 +233,48 @@ int main(void)
 		
 		//目标曲线建立区域
 		//v阶跃
-//		if(T<3)
-//		{
-//			velocity_aim=0;
-//		}
-//		else
-//		{
-//			velocity_aim=10;
-//		}
+
+		if(T<3)
+		{
+			velocity_aim=0;
+		}
+		else
+		{
+			velocity_aim=10;
+		}
+
 		//v正弦
 //		velocity_aim=7.07*sin(T);
 		//a阶跃
-//		if(T<3)
-//		{
-//			angle_aim = 0;
-//		}
-//		else
-//		{
-//			angle_aim = 2*PI;
-//		}
+/*
+		if(T<3)
+		{
+			angle_aim = 0;
+		}
+		else
+		{
+			angle_aim = 2*PI;
+		}
+*/
 		//a频率
-		angle_aim=1.414*PI*sin(T);
+//		angle_aim=1.414*PI*sin(T);
 		//a抗干扰
-//		angle_aim=0;
-//		if(T<3)
-//		{
-//			voltage_input = aPID(pid,angle_aim,&real,&Motor);
-//		}
-//		else
-//		{
-//			voltage_input = 10+aPID(pid,angle_aim,&real,&Motor);
-//		}
-	
-//		voltage_input = PID(pid,velocity_aim,&real,&Motor);//单级
-//		voltage_input = PID(pid,angle_aim,&real,&Motor);//单级
-		voltage_input = aPID(pid,angle_aim,&real,&Motor);
+
+		angle_aim=0;
+		if(T<3)
+		{
+			voltage_input = aPID(pid,angle_aim,&real,&Motor);
+		}
+		else
+		{
+			voltage_input = 10+aPID(pid,angle_aim,&real,&Motor);
+		}
+
+		
+//		voltage_input = PID(pid,velocity_aim,&real,&Motor);//单级v
+//		voltage_input = PID(pid,angle_aim,&real,&Motor);//单级a
+//		voltage_input = aPID(pid,angle_aim,&real,&Motor);
 		real.last_angle=real.angle;
-//转化输入		voltage_input = velocity_voltage(velocity_input,s,&Motor);
 		Motor_Simulation(&Motor,voltage_input,dt);
     /* USER CODE END WHILE */
                                                                                                                                                                             
