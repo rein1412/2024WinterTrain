@@ -145,14 +145,7 @@ float vPID(float pid[],float velocity_aim,struct value *real,motorObject_t *moto
 	velocity_input_i += pid[4]*dv;
 	//d项
 	velocity_input_d = pid[5]*(real->velocity-real->last_velocity);
-	if(velocity_input_p+velocity_input_i+velocity_input_d <= motor->maxU)
-	{
-		return velocity_input_p+velocity_input_i+velocity_input_d;
-	}
-	else
-	{
-		return motor->maxU;
-	}
+	return velocity_input_p+velocity_input_i+velocity_input_d;
 }
 //外环
 float aPID(float pid[],float angle_aim,struct value *real,motorObject_t *motor)
