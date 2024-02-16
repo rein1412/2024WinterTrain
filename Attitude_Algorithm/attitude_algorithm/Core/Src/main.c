@@ -18,11 +18,16 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "spi.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stdio.h"
+#include "mpu6500.h"
+//#include "Mahony.h"
 
 /* USER CODE END Includes */
 
@@ -44,6 +49,10 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+uint8_t receive_data[60];
+char str[61];
+int len;
+
 
 /* USER CODE END PV */
 
@@ -86,18 +95,28 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_SPI1_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+	__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
+	HAL_UART_Receive_DMA(&huart1, receive_data, 100);//DMA设置
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		mpu6500_init();//6500初始化?
+		Get_MPU6500_Data();//获取原始数据
+		printf("%f,%f,%f\r\n",mpu_data.ax,mpu_data.ay,mpu_data.az);
+		//解算
+		//printf()//发送?
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+		HAL_Delay(100);
   }
   /* USER CODE END 3 */
 }
@@ -142,6 +161,22 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void UART_IDLE_Callback(UART_HandleTypeDef *huart)
+{
+ if(__HAL_UART_GET_FLAG(huart,UART_FLAG_IDLE))
+ {	
+  __HAL_UART_CLEAR_IDLEFLAG(huart);
+  __HAL_DMA_CLEAR_FLAG(huart,DMA_FLAG_TC5);
+	HAL_UART_DMAStop(huart);
+  int len=100-__HAL_DMA_GET_COUNTER(huart->hdmarx);
+	 HAL_UART_Receive_DMA(&huart1,receive_data,100);//不定长DMA接收
+	 for(int i = 0; i < sizeof(receive_data); i++) 
+	 {
+        sprintf(&str[i], "%c", receive_data[i]);
+   }
+	 str[60] = '\0';
+ }
+}
 
 /* USER CODE END 4 */
 
