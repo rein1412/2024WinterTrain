@@ -101,14 +101,13 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
 	HAL_UART_Receive_DMA(&huart1, receive_data, 100);//DMA设置
-	
+	mpu6500_init();//6500初始化
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		mpu6500_init();//6500初始化?
 		Get_MPU6500_Data();//获取原始数据
 		printf("%f,%f,%f\r\n",mpu_data.ax,mpu_data.ay,mpu_data.az);
 		//解算
