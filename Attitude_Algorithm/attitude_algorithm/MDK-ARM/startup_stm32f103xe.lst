@@ -557,10 +557,11 @@ ARM Macro Assembler    Page 9
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
 ork --depend=attitude_algorithm\startup_stm32f103xe.d -oattitude_algorithm\star
 tup_stm32f103xe.o -I.\RTE\_attitude_algorithm -ID:\Keil\Pack\ARM\CMSIS\5.7.0\CM
-SIS\Core\Include -ID:\Keil\Pack\Keil\STM32F1xx_DFP\2.3.0\Device\Include --prede
-fine="__UVISION_VERSION SETA 530" --predefine="_RTE_ SETA 1" --predefine="STM32
-F10X_HD SETA 1" --predefine="_RTE_ SETA 1" --list=startup_stm32f103xe.lst start
-up_stm32f103xe.s
+SIS\Core\Include -ID:\Keil\Pack\ARM\CMSIS\5.7.0\CMSIS\DSP\Include -ID:\Keil\Pac
+k\ARM\CMSIS\5.7.0\CMSIS\DSP\PrivateInclude -ID:\Keil\Pack\Keil\STM32F1xx_DFP\2.
+3.0\Device\Include --predefine="__UVISION_VERSION SETA 530" --predefine="_RTE_ 
+SETA 1" --predefine="STM32F10X_HD SETA 1" --predefine="_RTE_ SETA 1" --list=sta
+rtup_stm32f103xe.lst startup_stm32f103xe.s
 
 
 

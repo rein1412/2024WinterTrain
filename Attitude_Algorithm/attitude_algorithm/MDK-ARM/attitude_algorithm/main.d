@@ -34,3 +34,10 @@ attitude_algorithm\main.o: ../Core/Inc/gpio.h
 attitude_algorithm\main.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\stdio.h
 attitude_algorithm\main.o: ../Drivers/MPU6500/mpu6500.h
 attitude_algorithm\main.o: ../Drivers/MPU6500/mpu6500_reg_h.h
+attitude_algorithm\main.o: ../Drivers/MPU6500/EKF.h
+attitude_algorithm\main.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\math.h
+attitude_algorithm\main.o: D:\Keil\Pack\ARM\CMSIS\5.7.0\CMSIS\DSP\Include\arm_math.h
+attitude_algorithm\main.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\string.h
+attitude_algorithm\main.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\float.h
+attitude_algorithm\main.o: D:\Keil\Core\ARM\ARMCC\Bin\..\include\limits.h
+attitude_algorithm\main.o: ..\Bsp\bsp_dwt.h

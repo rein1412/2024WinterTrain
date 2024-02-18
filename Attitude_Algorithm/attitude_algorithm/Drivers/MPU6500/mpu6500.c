@@ -1,7 +1,7 @@
 #include "mpu6500.h"
 
 uint8_t tx,rx,id;
-struct MPU_DATA mpu_data;
+MPU_DATA mpu_data;
 
 //MPU6500单次写命令
 uint8_t mpu_write_byte(uint8_t const reg, uint8_t const data)

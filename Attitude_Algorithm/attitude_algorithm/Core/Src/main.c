@@ -27,6 +27,8 @@
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
 #include "mpu6500.h"
+#include "EKF.h"
+#include "bsp_dwt.h"
 //#include "Mahony.h"
 
 /* USER CODE END Includes */
@@ -49,6 +51,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+uint32_t DWT_CNT;
+float dt,T;
 uint8_t receive_data[60];
 char str[61];
 int len;
@@ -99,6 +103,7 @@ int main(void)
   MX_SPI1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+	DWT_Init(72);//dwt外设主频72MHz
 	__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
 	HAL_UART_Receive_DMA(&huart1, receive_data, 100);//DMA设置
 	mpu6500_init();//6500初始化
@@ -108,6 +113,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		dt = DWT_GetDeltaT(&DWT_CNT);//定义dt
+		T += dt;//获取时间
 		Get_MPU6500_Data();//获取原始数据
 		printf("%f,%f,%f\r\n",mpu_data.ax,mpu_data.ay,mpu_data.az);
 		//解算
@@ -115,7 +122,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		HAL_Delay(100);
+		HAL_Delay(1);
   }
   /* USER CODE END 3 */
 }
