@@ -697,14 +697,14 @@
               <FilePath>..\Drivers\MPU6500\mpu6500_reg_h.h</FilePath>
             </File>
             <File>
-              <FileName>EKF.c</FileName>
+              <FileName>mahony.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Drivers\MPU6500\EKF.c</FilePath>
+              <FilePath>..\Drivers\MPU6500\mahony.c</FilePath>
             </File>
             <File>
-              <FileName>EKF.h</FileName>
+              <FileName>mahony.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\Drivers\MPU6500\EKF.h</FilePath>
+              <FilePath>..\Drivers\MPU6500\mahony.h</FilePath>
             </File>
           </Files>
         </Group>

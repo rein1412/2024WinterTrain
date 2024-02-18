@@ -25,7 +25,7 @@
 "attitude_algorithm\stm32f1xx_hal_uart.o"
 "attitude_algorithm\system_stm32f1xx.o"
 "attitude_algorithm\mpu6500.o"
-"attitude_algorithm\ekf.o"
+"attitude_algorithm\mahony.o"
 "attitude_algorithm\bsp_dwt.o"
 "attitude_algorithm\basicmathfunctions.o"
 "attitude_algorithm\bayesfunctions.o"

@@ -135,6 +135,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
+          <Name>d</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -158,6 +159,16 @@
           <count>0</count>
           <WinNumber>1</WinNumber>
           <ItemText>mpu_data</ItemText>
+        </Ww>
+        <Ww>
+          <count>1</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>q</ItemText>
+        </Ww>
+        <Ww>
+          <count>2</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>angle</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -593,8 +604,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Drivers\MPU6500\EKF.c</PathWithFileName>
-      <FilenameWithoutPath>EKF.c</FilenameWithoutPath>
+      <PathWithFileName>..\Drivers\MPU6500\mahony.c</PathWithFileName>
+      <FilenameWithoutPath>mahony.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -605,8 +616,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\Drivers\MPU6500\EKF.h</PathWithFileName>
-      <FilenameWithoutPath>EKF.h</FilenameWithoutPath>
+      <PathWithFileName>..\Drivers\MPU6500\mahony.h</PathWithFileName>
+      <FilenameWithoutPath>mahony.h</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

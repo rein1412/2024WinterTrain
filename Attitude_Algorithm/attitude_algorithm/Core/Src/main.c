@@ -27,7 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
 #include "mpu6500.h"
-#include "EKF.h"
+#include "mahony.h"
 #include "bsp_dwt.h"
 //#include "Mahony.h"
 
@@ -52,7 +52,7 @@
 
 /* USER CODE BEGIN PV */
 uint32_t DWT_CNT;
-float dt,T;
+float dt;
 uint8_t receive_data[60];
 char str[61];
 int len;
@@ -107,18 +107,22 @@ int main(void)
 	__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
 	HAL_UART_Receive_DMA(&huart1, receive_data, 100);//DMA设置
 	mpu6500_init();//6500初始化
+	Get_MPU6500_Data();//初始化原始数据
+	quaternion_init();//初始化四元数
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		dt = DWT_GetDeltaT(&DWT_CNT);//定义dt
-		T += dt;//获取时间
-		Get_MPU6500_Data();//获取原始数据
-		printf("%f,%f,%f\r\n",mpu_data.ax,mpu_data.ay,mpu_data.az);
-		//解算
-		//printf()//发送?
+		dt = DWT_GetDeltaT(&DWT_CNT);//更新dt
+		
+		Get_MPU6500_Data();//更新原始数据
+		
+		Mahony_update(dt);//通过Mahony算法更新四元数与欧拉角
+		
+		printf("yaw=%f,roll=%f,pitch=%f\r\n",angle[0],angle[1],angle[2]);//输出欧拉角
+		
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -167,7 +171,7 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void UART_IDLE_Callback(UART_HandleTypeDef *huart)
+void UART_IDLE_Callback(UART_HandleTypeDef *huart)//留个接收中断
 {
  if(__HAL_UART_GET_FLAG(huart,UART_FLAG_IDLE))
  {	

@@ -17,10 +17,7 @@ typedef struct MPU_DATA
 extern MPU_DATA mpu_data;
 extern uint8_t tx,rx,id;
 
-uint8_t mpu_write_byte(uint8_t const reg, uint8_t const data);
-uint8_t mpu_read_byte(uint8_t const reg);
 uint8_t mpu6500_init(void);
-float Get_16Bit_Data(uint8_t addr_h, uint8_t addr_l);
 void Get_MPU6500_Data(void);
 
 #endif
