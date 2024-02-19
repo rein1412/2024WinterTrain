@@ -4,6 +4,7 @@
 #define MPU_NSS_LOW HAL_GPIO_WritePin(GPIOC,MPU_NSS_Pin,GPIO_PIN_RESET);
 #define MPU_NSS_HIGH HAL_GPIO_WritePin(GPIOC,MPU_NSS_Pin,GPIO_PIN_SET);
 #define g 9.8
+#define pi 3.14
 
 #include "mpu6500_reg_h.h"
 #include "stdint.h"

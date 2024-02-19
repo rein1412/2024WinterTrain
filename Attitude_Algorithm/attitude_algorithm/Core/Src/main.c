@@ -53,8 +53,8 @@
 /* USER CODE BEGIN PV */
 uint32_t DWT_CNT;
 float dt;
-uint8_t receive_data[60];
-char str[61];
+uint8_t receive_data[30];
+char str[31];
 int len;
 
 
@@ -184,7 +184,7 @@ void UART_IDLE_Callback(UART_HandleTypeDef *huart)//留个接收中断
 	 {
         sprintf(&str[i], "%c", receive_data[i]);
    }
-	 str[60] = '\0';
+	 str[30] = '\0';
  }
 }
 

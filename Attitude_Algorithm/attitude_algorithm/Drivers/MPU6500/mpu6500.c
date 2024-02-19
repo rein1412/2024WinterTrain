@@ -66,14 +66,14 @@ float Get_16Bit_Data(uint8_t addr_h, uint8_t addr_l)
 void Get_MPU6500_Data(void)
 {
   //加速度数据+-4g
-	mpu_data.ax = Get_16Bit_Data(MPU6500_ACCEL_XOUT_H,MPU6500_ACCEL_XOUT_L)*4*g*0.9993 / 32768 + 0.025;
-	mpu_data.ay = Get_16Bit_Data(MPU6500_ACCEL_YOUT_H,MPU6500_ACCEL_YOUT_L)*4*g*0.9898 / 32768 - 0.0863;
-	mpu_data.az = Get_16Bit_Data(MPU6500_ACCEL_ZOUT_H,MPU6500_ACCEL_ZOUT_L)*4*g*0.9892 / 32768 + 0.4448;
+	mpu_data.ax = Get_16Bit_Data(MPU6500_ACCEL_XOUT_H,MPU6500_ACCEL_XOUT_L)*32768*0.9993 / 32768 + 0.025;
+	mpu_data.ay = Get_16Bit_Data(MPU6500_ACCEL_YOUT_H,MPU6500_ACCEL_YOUT_L)*32768*0.9898 / 32768 - 0.0863;
+	mpu_data.az = Get_16Bit_Data(MPU6500_ACCEL_ZOUT_H,MPU6500_ACCEL_ZOUT_L)*32768*0.9892 / 32768 + 0.4448;
 	
 	//陀螺仪数据+-2000dps
-	mpu_data.gx = Get_16Bit_Data(MPU6500_GYRO_XOUT_H,MPU6500_GYRO_XOUT_L)*2000 / 32768 + 1.679097;//零偏校准
-	mpu_data.gy = Get_16Bit_Data(MPU6500_GYRO_YOUT_H,MPU6500_GYRO_YOUT_L)*2000 / 32768 - 2.095563;
-	mpu_data.gz = Get_16Bit_Data(MPU6500_GYRO_ZOUT_H,MPU6500_GYRO_ZOUT_L)*2000 / 32768 + 1.244804;
+	mpu_data.gx = (Get_16Bit_Data(MPU6500_GYRO_XOUT_H,MPU6500_GYRO_XOUT_L)*2000 / 32768 + 1.679097)*pi / 180;//零偏校准
+	mpu_data.gy = (Get_16Bit_Data(MPU6500_GYRO_YOUT_H,MPU6500_GYRO_YOUT_L)*2000 / 32768 - 2.095563)*pi / 180;
+	mpu_data.gz = (Get_16Bit_Data(MPU6500_GYRO_ZOUT_H,MPU6500_GYRO_ZOUT_L)*2000 / 32768 + 1.244804)*pi / 180;
 	//温度
 	mpu_data.temp = Get_16Bit_Data(MPU6500_TEMP_OUT_H,MPU6500_TEMP_OUT_L)/333.87f +21;
 

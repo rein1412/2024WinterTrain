@@ -1,8 +1,6 @@
 #ifndef __MAHONY_H
 #define __MAHONY_H
 
-#define pi 3.14
-
 #include "math.h"
 #include "arm_math.h"
 #include "mpu6500.h"

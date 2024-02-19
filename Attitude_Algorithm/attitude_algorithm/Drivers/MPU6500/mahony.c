@@ -3,8 +3,8 @@
 //初始欧拉角，旋转顺序zxy
 //angle[]欧拉角,yaw偏航角绕z轴，roll横滚角绕y轴，pitch俯仰角绕x轴
 
-volatile float twoKp = 2.0f * 50.0f;											// 2 * Kp
-volatile float twoKi = 2.0f * 0.1f;											// 2 * Ki
+volatile float twoKp = 2.0f * 10.0f;											// 2 * Kp
+volatile float twoKi = 2.0f * 0.01f;											// 2 * Ki
 float q[4];//四元数
 float angle[3];//欧拉角yaw偏航角绕z轴，roll横滚角绕y轴，pitch俯仰角绕x轴
 
@@ -21,8 +21,8 @@ void quaternion_norm(void)//四元数归一化
 void quaternion_init(void)//初始化四元数
 {
 	angle[0] = 0;//初始偏航角无法获得，定义为0
-	angle[1] = (180*atan(mpu_data.ay / mpu_data.az)) / pi;
-	angle[2] = (180*asin(mpu_data.ay / sqrt(mpu_data.ax*mpu_data.ax + mpu_data.ay*mpu_data.ay + mpu_data.az*mpu_data.az))) / pi;
+	angle[1] = 180*atan(mpu_data.ay / mpu_data.az) / pi;
+	angle[2] = 180*asin(mpu_data.ay / sqrt(mpu_data.ax*mpu_data.ax + mpu_data.ay*mpu_data.ay + mpu_data.az*mpu_data.az)) / pi;
 	q[0] = cos(angle[0]/2)*cos(angle[1]/2)*cos(angle[2]/2) - sin(angle[0]/2)*sin(angle[1]/2)*sin(angle[2]/2);
 	q[1] = cos(angle[1]/2)*cos(angle[0]/2)*sin(angle[2]/2) - cos(angle[2]/2)*sin(angle[1]/2)*sin(angle[0]/2);
 	q[2] = cos(angle[2]/2)*cos(angle[0]/2)*sin(angle[1]/2) - cos(angle[1]/2)*sin(angle[2]/2)*sin(angle[0]/2);
@@ -41,9 +41,9 @@ void acc_norm(void)//加速度归一化
 
 void qua_euler(void)//四元数反解欧拉角
 {
-	angle[0] = atan(2*q[0]*q[3]-2*q[1]*q[2]) / (q[0]*q[0]-q[1]*q[1]+q[2]*q[2]-q[3]*q[3]);//yew
-	angle[1] = atan(2*q[0]*q[2]-2*q[1]*q[3]) / (q[0]*q[0]-q[1]*q[1]-q[2]*q[2]+q[3]*q[3]);//roll
-	angle[2] = asin(2*q[2]*q[3]+2*q[0]*q[1]);                                            //pitch
+	angle[0] = 180*atan((2*q[0]*q[3]-2*q[1]*q[2]) / (q[0]*q[0]-q[1]*q[1]+q[2]*q[2]-q[3]*q[3])) / pi;//yew
+	angle[1] = 180*atan((2*q[0]*q[2]-2*q[1]*q[3]) / (q[0]*q[0]-q[1]*q[1]-q[2]*q[2]+q[3]*q[3])) / pi;//roll
+	angle[2] = 180*asin(2*q[2]*q[3]+2*q[0]*q[1]) / pi;                                              //pitch
 }
 
 void Mahony_update(float dt)//更新四元数，dt为采样时间，单位s
@@ -56,7 +56,7 @@ void Mahony_update(float dt)//更新四元数，dt为采样时间，单位s
   // 只在加速度计有数据时才进行运算
 	if(!((mpu_data.ax == 0.0f) && (mpu_data.ay == 0.0f) && (mpu_data.az == 0.0f)))
 	{
-		// 将加速度计得到的实际重力加速度向量v单位化
+		// 将加速度计得到的实际重力加速度向量v归一化
 		acc_norm();
     // 通过四元数得到理论重力加速度向量g 
     // 注意，这里实际上是矩阵第三列*1/2
