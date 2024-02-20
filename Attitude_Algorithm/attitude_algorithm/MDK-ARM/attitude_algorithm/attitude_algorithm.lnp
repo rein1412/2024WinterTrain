@@ -40,7 +40,7 @@
 "attitude_algorithm\statisticsfunctions.o"
 "attitude_algorithm\supportfunctions.o"
 "attitude_algorithm\transformfunctions.o"
---strict --scatter "attitude_algorithm\attitude_algorithm.sct"
+--library_type=microlib --strict --scatter "attitude_algorithm\attitude_algorithm.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
 --list "attitude_algorithm.map" -o attitude_algorithm\attitude_algorithm.axf

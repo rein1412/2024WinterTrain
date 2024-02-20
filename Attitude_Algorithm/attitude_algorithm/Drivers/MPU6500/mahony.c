@@ -21,7 +21,7 @@ void quaternion_norm(void)//四元数归一化
 void quaternion_init(void)//初始化四元数
 {
 	angle[0] = 0;//初始偏航角无法获得，定义为0
-	angle[1] = 180*atan(mpu_data.ay / mpu_data.az) / pi;
+	angle[1] = 180*atan2(mpu_data.ay , mpu_data.az) / pi;
 	angle[2] = 180*asin(mpu_data.ay / sqrt(mpu_data.ax*mpu_data.ax + mpu_data.ay*mpu_data.ay + mpu_data.az*mpu_data.az)) / pi;
 	q[0] = cos(angle[0]/2)*cos(angle[1]/2)*cos(angle[2]/2) - sin(angle[0]/2)*sin(angle[1]/2)*sin(angle[2]/2);
 	q[1] = cos(angle[1]/2)*cos(angle[0]/2)*sin(angle[2]/2) - cos(angle[2]/2)*sin(angle[1]/2)*sin(angle[0]/2);
@@ -41,8 +41,8 @@ void acc_norm(void)//加速度归一化
 
 void qua_euler(void)//四元数反解欧拉角
 {
-	angle[0] = 180*atan((2*q[0]*q[3]-2*q[1]*q[2]) / (q[0]*q[0]-q[1]*q[1]+q[2]*q[2]-q[3]*q[3])) / pi;//yew
-	angle[1] = 180*atan((2*q[0]*q[2]-2*q[1]*q[3]) / (q[0]*q[0]-q[1]*q[1]-q[2]*q[2]+q[3]*q[3])) / pi;//roll
+	angle[0] = 180*atan2((2*q[0]*q[3]-2*q[1]*q[2]) , (q[0]*q[0]-q[1]*q[1]+q[2]*q[2]-q[3]*q[3])) / pi;//yew
+	angle[1] = 180*atan2((2*q[0]*q[2]-2*q[1]*q[3]) , (q[0]*q[0]-q[1]*q[1]-q[2]*q[2]+q[3]*q[3])) / pi;//roll
 	angle[2] = 180*asin(2*q[2]*q[3]+2*q[0]*q[1]) / pi;                                              //pitch
 }
 
